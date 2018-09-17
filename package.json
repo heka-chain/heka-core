@@ -1,0 +1,11 @@
+{
+  "name": "heka",
+  "version": "0.0.1",
+  "description": "heka chain",
+  "main": "index.js",
+  "author": "phantomk",
+  "license": "MIT",
+  "dependencies": {
+    "@types/node": "^10.10.0"
+  }
+}
