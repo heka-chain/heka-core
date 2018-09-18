@@ -6,6 +6,8 @@
   "author": "phantomk",
   "license": "MIT",
   "dependencies": {
-    "@types/node": "^10.10.0"
+    "@types/node": "^10.10.0",
+    "keccak": "^1.4.0",
+    "secp256k1": "^3.5.2"
   }
 }
