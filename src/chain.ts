@@ -1,15 +1,21 @@
 import Block from './block';
+import Transaction from './transaction';
 
 export default class Chain {
-  chain: any;
+  chain: any[];
   difficulty: number;
-  constructor(difficulty: number) {
+  reward: string;
+  pendingTransactions: any[];
+  constructor(difficulty: number, reward: string) {
     this.chain = [this._createBaseBlock()];
     this.difficulty = difficulty;
+    this.reward = reward;
+
+    this.pendingTransactions = [];
   }
 
   _createBaseBlock() {
-    return new Block(0, Date.now(), 'hello heka', '');
+    return new Block(Date.now(), 'hello heka', '');
   }
 
   getChain() {
@@ -24,10 +30,18 @@ export default class Chain {
     return this.chain[this.chain.length - 1].hash;
   }
 
-  addBlock(block: any) {
+  addBlock(to: string) {
+    let block = new Block(Date.now(), this.pendingTransactions, '0');
     block.preHash = this.getLastBlockHash();
-    block.hash = block.mineBlock(this.difficulty);
+    block.mineBlock(this.difficulty);
     this.chain.push(block);
+
+    let transaction = new Transaction('', to, this.reward);
+    this.pendingTransactions = [transaction];
+  }
+
+  createTransaction(transaction: any) {
+    this.pendingTransactions.push(transaction);
   }
 
   validChain() {

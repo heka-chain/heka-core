@@ -1,14 +1,12 @@
 import * as crypto from 'crypto';
 
 export default class Block {
-  index: number;
   timestamp: number;
   preHash: string;
   hash: string;
   data: any;
   nonce: number;
-  constructor(index: number, timestamp: number, data: any, preHash: string) {
-    this.index = index;
+  constructor(timestamp: number, data: any, preHash: string) {
     this.timestamp = timestamp;
     this.preHash = preHash;
     this.hash = this._setHash();
@@ -17,7 +15,7 @@ export default class Block {
   }
 
   _setHash() {
-    return crypto.createHash('sha256').update(this.index + this.timestamp + this.preHash + JSON.stringify(this.data) + this.nonce).digest('hex');
+    return crypto.createHash('sha256').update(this.timestamp + this.preHash + JSON.stringify(this.data) + this.nonce).digest('hex');
   }
 
   mineBlock(difficulty: number) {
