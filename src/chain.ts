@@ -2,8 +2,10 @@ import Block from './block';
 
 export default class Chain {
   chain: any;
-  constructor() {
+  difficulty: number;
+  constructor(difficulty: number) {
     this.chain = [this._createBaseBlock()];
+    this.difficulty = difficulty;
   }
 
   _createBaseBlock() {
@@ -22,9 +24,9 @@ export default class Chain {
     return this.chain[this.chain.length - 1].hash;
   }
 
-  addBlock(block) {
+  addBlock(block: any) {
     block.preHash = this.getLastBlockHash();
-    block.hash = block._setHash();
+    block.hash = block.mineBlock(this.difficulty);
     this.chain.push(block);
   }
 

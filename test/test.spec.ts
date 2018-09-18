@@ -1,5 +1,5 @@
-import Block from '../block';
-import Chain from '../chain';
+import Block from '../src/block';
+import Chain from '../src/chain';
 
 const index = 1;
 const timestamp = 1234567890123;
@@ -8,9 +8,12 @@ const data = {key: 'block', value: 'chain'};
 const test = new Block(index, timestamp, data, preHash);
 console.log('block hash -- ', test.getHash());
 
-
-const chain = new Chain();
+const chain = new Chain(4); // set difficulty 2
 const newBlock = new Block(1, Date.now(), 'hello heka', '');
+let start = process.hrtime();
 chain.addBlock(newBlock);
-console.log('block chin -- ', chain.getChain())
-console.log('chain valid -- ', chain.validChain())
+let diff = process.hrtime(start);
+let ms = diff[0] * 1e3 + diff[1] * 1e-6;
+console.log('mining time %s ms', ms);
+console.log('block chin -- ', JSON.stringify(chain.getChain()));
+console.log('chain valid -- ', JSON.stringify(chain.validChain()));
