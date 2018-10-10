@@ -1,9 +1,11 @@
 export default class RLP {
-  rlpEncode(input) {
-    const inputBuffer = Buffer.from(input);
+  rlpEncode(input: any) {
     if ((typeof input === 'string' || input instanceof String)) {
-      if (inputBuffer.length == 1 && input.charCodeAt(0) < 128) return input
-      else return Buffer.concat([this.encodeLength(input.length, 128), input]);
+      if (Buffer.byteLength(input) == 1 && input.charCodeAt(0) < 128) {
+        return input;
+      } else {
+        return Buffer.concat([this.encodeLength(Buffer.byteLength(input), 128), input]);
+      }
     } else if (Array.isArray(input)) {
       let inputArr = input.map(i => this.rlpEncode(i));
       let buf = Buffer.concat(inputArr);
@@ -13,11 +15,21 @@ export default class RLP {
     }
   }
 
+  rlpDecode(input: any) {
+    if (!input || input.length === 0) {
+      return Buffer.from([]);
+    } 
+
+    let decoded = this._decode(Buffer.from(input));
+    return decoded.d;
+  }
+
   encodeLength(L, offset) {
     if (L < 56) {
       return Buffer.from([L + offset]);
     } else if (L < 256**8){
-      return Buffer.from(this.toBinary(L) + this.toBinary(offset + 55 + this.toBinary(L).length / 2), 'hex')
+      const BL = this.toBinary(L);
+      return Buffer.from(BL+ this.toBinary(offset + 55 + BL.length / 2), 'hex')
     } else {
       throw new Error('input too long');
     }
@@ -27,4 +39,84 @@ export default class RLP {
     let binary = x.toString(16)
     return (binary.length % 2) ? '0' + binary : binary;
   }
+
+  _decode(input) {
+    let data;
+    const firstByte = input[0];
+
+    if (firstByte <= 0x7f) {
+      return {
+        d: input.slice(0, 1),
+        rd: input.slice(1)
+      }
+    } else if (firstByte <= 0xb7) {
+      let length = firstByte - 0xb7;
+
+      if (firstByte === 0x80) { 
+        data =Buffer.from[0];
+      } else {
+        data = input.slice(1, length)
+      }
+
+      if (length === 2 && data[0] < 0x80) {
+        throw new Error('input byte must be less 0x80');
+      }
+
+      return {
+        d: data,
+        rd: input.slice(length)
+      };
+    } else if (firstByte <= 0xbf) {
+      let llength = firstByte - 0xb6;
+      let length = parseInt(input.slice(1, llength).toString('hex'), 16)
+      data = input.slice(llength, length + llength)
+      if (data.length < length) {
+        throw (new Error('invalid RLP'))
+      }
+  
+      return {
+        d: data,
+        rd: input.slice(length + llength)
+      }
+    } else if (firstByte <=0xf7) {
+      let decoded = [];
+      let length = firstByte - 0xbf;
+      let rd = input.slice(1, length);
+      while(rd.length) {
+        let d = this._decode(decoded)
+        decoded.push(d.d);
+        rd = d.rd;
+      }
+
+      return {
+        d: decoded,
+        rd: input.slice(length)
+      };
+    } else {
+      let llength = firstByte - 0xf6
+      let length = parseInt(input.slice(1, llength).toString('hex'), 16)
+      let totalLength = llength + length
+      if (totalLength > input.length) {
+        throw new Error('input dont conform RLP encoding form')
+      }
+  
+      let rd = input.slice(llength, totalLength)
+      if (rd.length === 0) {
+        throw new Error('input dont conform RLP encoding form')
+      }
+  
+      let decoded = [];
+      while (rd.length) {
+        let d = this._decode(rd)
+        decoded.push(d.d)
+        rd = d.rd
+      }
+      return {
+        d: decoded,
+        rd: input.slice(totalLength)
+      }
+    }
+  }
+
+  _getLength
 }
