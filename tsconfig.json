@@ -20,7 +20,11 @@
       {
         "name": "tslint-language-service"
       }
-    ]
+    ],
+    "paths": {
+      "@App/*": ["src/*"],
+      "lib/*": ["common/*"]
+    }
   },
   "include": ["src/*"]
 }

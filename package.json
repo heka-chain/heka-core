@@ -5,9 +5,18 @@
   "main": "index.js",
   "author": "phantomk",
   "license": "MIT",
+  "scripts": {
+    "jest": "ts-jest"
+  },
   "dependencies": {
     "@types/node": "^10.10.0",
     "keccak": "^1.4.0",
     "secp256k1": "^3.5.2"
+  },
+  "devDependencies": {
+    "@types/jest": "^23.3.5",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.0",
+    "typescript": "^3.0.3"
   }
 }
