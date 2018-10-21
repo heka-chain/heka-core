@@ -6,7 +6,8 @@
   "author": "phantomk",
   "license": "MIT",
   "scripts": {
-    "jest": "ts-jest"
+    "test": "jest --coverage",
+    "jest": "ts-jest config:init"
   },
   "dependencies": {
     "@types/node": "^10.10.0",
