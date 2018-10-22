@@ -1,10 +1,10 @@
 export default class RLP {
-  rlpEncode(input: any) {
-    if ((typeof input === 'string' || input instanceof String)) {
+  rlpEncode(input: any): any {
+    if ((typeof input === 'string')) {
       if (Buffer.byteLength(input) == 1 && input.charCodeAt(0) < 128) {
         return input;
       } else {
-        return Buffer.concat([this.encodeLength(Buffer.byteLength(input), 128), input]);
+        return Buffer.concat([this.encodeLength(Buffer.byteLength(input), 128), Buffer.from(input)]);
       }
     } else if (Array.isArray(input)) {
       let inputArr = input.map(i => this.rlpEncode(i));
@@ -15,16 +15,16 @@ export default class RLP {
     }
   }
 
-  rlpDecode(input: any) {
+  rlpDecode(input: Buffer): any {
     if (!input || input.length === 0) {
       return Buffer.from([]);
     } 
 
-    let decoded = this._decode(Buffer.from(input));
+    let decoded = this._decode(input);
     return decoded.d;
   }
 
-  encodeLength(L, offset) {
+  encodeLength(L: number, offset: number) {
     if (L < 56) {
       return Buffer.from([L + offset]);
     } else if (L < 256**8){
@@ -40,7 +40,7 @@ export default class RLP {
     return (binary.length % 2) ? '0' + binary : binary;
   }
 
-  _decode(input) {
+  _decode(input: Buffer ) {
     let data;
     const firstByte = input[0];
 
@@ -53,7 +53,7 @@ export default class RLP {
       let length = firstByte - 0xb7;
 
       if (firstByte === 0x80) { 
-        data =Buffer.from[0];
+        data = Buffer.from([]);
       } else {
         data = input.slice(1, length)
       }
@@ -79,11 +79,11 @@ export default class RLP {
         rd: input.slice(length + llength)
       }
     } else if (firstByte <=0xf7) {
-      let decoded = [];
+      let decoded: any[] = [];
       let length = firstByte - 0xbf;
       let rd = input.slice(1, length);
       while(rd.length) {
-        let d = this._decode(decoded)
+        let d = this._decode(rd)
         decoded.push(d.d);
         rd = d.rd;
       }
@@ -105,9 +105,9 @@ export default class RLP {
         throw new Error('input dont conform RLP encoding form')
       }
   
-      let decoded = [];
+      let decoded: any[] = [];
       while (rd.length) {
-        let d = this._decode(rd)
+        let d = this._decode(rd);
         decoded.push(d.d)
         rd = d.rd
       }
@@ -117,6 +117,4 @@ export default class RLP {
       }
     }
   }
-
-  _getLength
 }

@@ -1,6 +1,6 @@
 import RLP from '../../rlp/rlp';
 const rlp = new RLP;
-const testData = new Map([
+const testData = new Map<any>([
   ['dog', [ 0x83, 'd', 'o', 'g' ]],
   [['cat', 'dog'], [ 0xc8, 0x83, 'c', 'a', 't', 0x83, 'd', 'o', 'g' ]],
   ['', [ 0x80 ]],

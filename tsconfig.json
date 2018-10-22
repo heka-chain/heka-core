@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2015",
     "module": "commonjs",
-    "lib": ["es2015", "es2016", "esnext"],
+    "lib": ["es2015", "es2016", "esnext", "es2015.collection"],
     "sourceMap": true,
     "outDir": "build",
     "strict": true,
